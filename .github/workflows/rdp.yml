@@ -1,0 +1,39 @@
+name: RDP Server
+
+on:
+  workflow_dispatch:
+
+  jobs:
+    rdp:
+        runs-on: ubuntu-latest
+            timeout-minutes: 360
+
+                steps:
+                      - name: Install Tailscale
+                              run: |
+                                        curl -fsSL https://tailscale.com/install.sh | sh
+                                                  sudo tailscale up --authkey=${{ secrets.TAILSCALE_AUTHKEY }} --hostname=github-rdp
+
+                                                        - name: Install XRDP + Desktop
+                                                                run: |
+                                                                          sudo apt-get update -y
+                                                                                    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y xrdp xfce4 xfce4-goodies dbus-x11
+                                                                                              echo 'startxfce4' | sudo tee /etc/xrdp/startwm.sh
+                                                                                                        sudo service xrdp start
+                                                                                                        
+                                                                                                              - name: Set RDP Password
+                                                                                                                      run: |
+                                                                                                                                echo "runner:P@ssword123" | sudo chpasswd
+                                                                                                                                
+                                                                                                                                      - name: Show Connection Info
+                                                                                                                                              run: |
+                                                                                                                                                        echo "==============================="
+                                                                                                                                                                  echo "RDP IS READY!"
+                                                                                                                                                                            echo "Username: runner"
+                                                                                                                                                                                      echo "Password: P@ssword123"
+                                                                                                                                                                                                echo "Tailscale IP:"
+                                                                                                                                                                                                          tailscale ip -4
+                                                                                                                                                                                                                    echo "==============================="
+                                                                                                                                                                                                                    
+                                                                                                                                                                                                                          - name: Keep Alive
+                                                                                                                                                                                                                                  run: sleep 21600
